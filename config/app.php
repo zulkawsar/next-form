@@ -194,7 +194,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Kris\LaravelFormBuilder\FormBuilderServiceProvider::class,
+        // Kris\LaravelFormBuilder\FormBuilderServiceProvider::class,
 
     ],
 
@@ -210,7 +210,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'FormBuilder' => Kris\LaravelFormBuilder\Facades\FormBuilder::class,
+        // 'FormBuilder' => Kris\LaravelFormBuilder\Facades\FormBuilder::class,
     ])->toArray(),
 
 ];

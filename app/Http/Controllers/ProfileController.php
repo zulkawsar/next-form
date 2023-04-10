@@ -18,12 +18,6 @@ class ProfileController extends Controller
      */
     public function edit(Request $request, FormBuilder $formBuilder): View
     {
-        $form = $formBuilder->create(SongForm::class, [
-            'method' => 'POST',
-            'url' => route('profile.update')
-        ]);
-
-        return view('form.create', compact('form'));
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
