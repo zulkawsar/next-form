@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Custom Form Generate') }}
+            {{ __('Student Form') }}
         </h2>
     </x-slot>
 
@@ -27,8 +27,6 @@
                                 <div class="card bg-light mb-3">
                                     <div class="card-body">
                                         @if(count($fields) > 0)
-                                                <input type="hidden" name="form_id" value="{{ $form_id }}" />
-                                                <input type="hidden" name="field_ids" value="{{ $field_ids }}" />
 
                                                 @foreach($fields as $field)
                                                     @php
@@ -37,7 +35,7 @@
                                                         $id_for = 'input-fld-'. $loop->iteration;
                                                     @endphp
 
-                                                    <div class="form-group">
+                                                    <div class="mb-3">
                                                         @if($options->label)
                                                             <label for="{{ $id_for }}">{{ $options->label }}</label>
                                                         @endif
@@ -49,21 +47,15 @@
                                                         
 
                                                         @switch($field->field_type)
-                                                            @case("select")
-                                                                <select id="{{ $id_for }}" name={{ $field_name }} class="custom-select @error($field_name) is-invalid @enderror">
-                                                                    <option value="">Choose...</option>
-                                                                    @foreach(explode(",", $options->values) as $value)
-                                                                    <option value="{{ trim($value) }}" {{ old($field_name) == trim($value)? "selected" : "" }}>{{ trim($value) }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                                @break
-
-                                                            @case("textarea")
-                                                                <textarea class="form-control @error($field_name) is-invalid @enderror" id="{{ $id_for }}" name={{ $field_name }} rows={{ $options->rows }}>{{ old($field_name) }}</textarea>
-                                                                @break
-
-                                                            @default
+                                                            @case("input")
+                                                                @if($options->type == 'boolean')
+                                                                    <div class="form-check form-switch">
+                                                                      <input class="form-check-input" type="checkbox" name="{{ $field_name }}" role="switch" id="{{ $id_for }}">
+                                                                    </div>
+                                                                @else 
                                                                 <input type="{{ $options->type == "date" ? "text" : $options->type }}" class="form-control {{ $options->type == "date"? "datepicker" : "" }} @error($field_name) is-invalid @enderror" name={{ $field_name }} id="{{ $id_for }}" value="{{ old($field_name) }}" />
+                                                                @endif
+                                                            @default
                                                         @endswitch
 
                                                         @error($field_name)
@@ -71,7 +63,13 @@
                                                                 {{ $errors->first($field_name) }}
                                                             </div>
                                                         @enderror
+                                                        
+                                                        <form id="Delete{{$field->pivot->id}}" action="{{ route('field.destroy', [$field->pivot->id]) }}" method="POST" style="display: none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
                                                     </div>
+
                                                 @endforeach
                                         @endif
                                     </div>

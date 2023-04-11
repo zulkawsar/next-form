@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\Student;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -13,11 +14,12 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('email');
             $table->string('phone', 15);
             $table->string('class',10);
-            $table->enum('status', ['unconfirmed', 'admitted', 'terminated']);
+            $table->enum('status', [Student::STDUNCONFIRMED, Student::STDADMITTED, Student::STDTERMINATED]);
             $table->timestamps();
         });
     }

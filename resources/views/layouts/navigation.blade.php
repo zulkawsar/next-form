@@ -18,8 +18,8 @@
                     <x-nav-link :href="route('show.form')" :active="request()->routeIs('show.form')">
                         {{ __('Generate form') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('show.form')" :active="request()->routeIs('show.form')">
-                        {{ __('Show Form') }}
+                    <x-nav-link :href="route('student.form')" :active="request()->routeIs('student.form')">
+                        {{ __('Student Form') }}
                     </x-nav-link>
                 </div>
             </div>

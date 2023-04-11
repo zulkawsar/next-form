@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Models\{Form, FormField, Field};
 use App\Http\Requests\FormBuilderRequest;
@@ -13,7 +14,8 @@ class FormBuilder extends Controller
     /**
      * show the form
      */
-    public function showForm() {
+    public function showForm() : View
+    {
         $form = Form::where('user_id', auth()->user()->id)->first();
         if (!$form) {
             $form = Form::create([
@@ -24,11 +26,8 @@ class FormBuilder extends Controller
         $field_map_ids = FormField::where('form_id', $form->id)->select('id')->pluck('id')->toArray();
 
         $data = [
-            'title' => 'the form',
             'all_fields' => Field::get(),
             'fields' => $form->fields()->orderBy('form_fields.id', 'asc')->get(),
-            'form_id' => $form->id,
-            'field_ids' => implode(",", $field_map_ids)
         ];
 
         return view('form.form', $data);
@@ -92,7 +91,7 @@ class FormBuilder extends Controller
     }
 
     /**
-     * handle form data ajax request save
+     * handle form data request save
      */
     public function saveForm(FormBuilderRequest $request) {
         

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\FormBuilder;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\{ProfileController, StudentController};
 
 /*
 |--------------------------------------------------------------------------
@@ -34,8 +34,11 @@ Route::middleware('auth')->group(function () {
     // form builder
     Route::get('/generate-form', [FormBuilder::class,'showForm'])->name('show.form');
     Route::post('/save-form', [FormBuilder::class,'saveForm'])->name('save.form');
-    Route::post('/submit-form', [FormBuilder::class,'handleFormRequest'])->name('submit.form');
     Route::delete('/field/{id}', [FormBuilder::class,'delete'])->name('field.destroy');
+
+    // student form
+    Route::get('/student-form', [StudentController::class,'index'])->name('student.form');
+    Route::post('/student-form', [StudentController::class,'store'])->name('student.save');
 });
 
 require __DIR__.'/auth.php';

@@ -92,8 +92,6 @@
                                 <div class="card bg-light mb-3">
                                     <div class="card-body">
                                         @if(count($fields) > 0)
-                                                <input type="hidden" name="form_id" value="{{ $form_id }}" />
-                                                <input type="hidden" name="field_ids" value="{{ $field_ids }}" />
 
                                                 @foreach($fields as $field)
                                                     @php
@@ -102,7 +100,7 @@
                                                         $id_for = 'input-fld-'. $loop->iteration;
                                                     @endphp
 
-                                                    <div class="form-group">
+                                                    <div class="mb-3">
                                                         @if($options->label)
                                                             <label for="{{ $id_for }}">{{ $options->label }}</label>
                                                         @endif
@@ -114,18 +112,15 @@
                                                         
 
                                                         @switch($field->field_type)
-                                                            @case("textarea")
-                                                                <textarea class="form-control @error($field_name) is-invalid @enderror" id="{{ $id_for }}" name={{ $field_name }} rows={{ $options->rows }}>{{ old($field_name) }}</textarea>
-                                                                @break
-
-                                                            @default
+                                                            @case("input")
                                                                 @if($options->type == 'boolean')
                                                                     <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" name="is_required" role="switch" id="isRequired">
+                                                                      <input class="form-check-input" type="checkbox" name="{{ $field_name }}" role="switch" id="{{ $id_for }}">
                                                                     </div>
                                                                 @else 
                                                                 <input type="{{ $options->type == "date" ? "text" : $options->type }}" class="form-control {{ $options->type == "date"? "datepicker" : "" }} @error($field_name) is-invalid @enderror" name={{ $field_name }} id="{{ $id_for }}" value="{{ old($field_name) }}" />
                                                                 @endif
+                                                            @default
                                                         @endswitch
 
                                                         @error($field_name)
