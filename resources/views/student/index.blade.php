@@ -42,7 +42,7 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="phone_number">Phone number:</label>
-                                                <input type="text" id="phone_number" name="phone" class="form-control" placeholder="+880XXXXXXXXXX" maxlength="13" required>
+                                                <input type="text" id="phone_number" name="phone" class="form-control" placeholder="+880XXXXXXXXXX" maxlength="13" value="{{ old('phone') }}" required>
                                                 <div class="help-block with-errors"></div>
                                             </div>
                                             <div class="mb-3">

@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('student.form')" :active="request()->routeIs('student.form')">
                         {{ __('Student Form') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('student.show')" :active="request()->routeIs('student.show')">
+                        {{ __('Student List') }}
+                    </x-nav-link>
                 </div>
             </div>
 

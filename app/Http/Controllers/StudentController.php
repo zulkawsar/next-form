@@ -48,7 +48,7 @@ class StudentController extends Controller
             }
         });
         alert()->success('Saved successfully');
-        return back();
+        return redirect()->route('student.show');
         
     }
 
@@ -59,31 +59,8 @@ class StudentController extends Controller
     {   
         $form               = Form::where('user_id', auth()->user()->id)->first();
         $data['fields']     = $form->fields()->orderBy('form_fields.id', 'asc')->get();
-        $data['students']   = Student::with('studentForm')->latest()->paginate(10);
+        $data['students']   = Student::with('studentForm')->where('user_id', auth()->user()->id)->latest()->paginate(10);
         return view('student.show', $data);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }
