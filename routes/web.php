@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/field/{id}', [FormBuilder::class,'delete'])->name('field.destroy');
 
     // student form
+    Route::get('/students', [StudentController::class,'show'])->name('student.show');
     Route::get('/student-form', [StudentController::class,'index'])->name('student.form');
     Route::post('/student-form', [StudentController::class,'store'])->name('student.save');
 });

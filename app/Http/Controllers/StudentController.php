@@ -2,13 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Student;
 use Illuminate\Http\Request;
+use App\Services\StudentService;
 use App\Models\{Form, FormField, Field};
+use App\Http\Requests\StudentStoreRequest;
 use Illuminate\Support\Facades\{Validator, DB};
 
 
 class StudentController extends Controller
 {
+    public $studentService; 
+
+    public function __construct()
+    {
+        $this->studentService = new StudentService();
+    }
     /**
      * Display a listing of the resource.
      */
@@ -26,27 +35,32 @@ class StudentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StudentStoreRequest $request)
     {
-        //
+        DB::transaction(function () use ($request) {
+            try {
+                $studentId = $this->studentService->saveStudent($request);
+                $this->studentService->saveCustomData($request, $studentId);
+            } catch (Exception $e) {
+                $save_success = 0;
+            }
+        });
+        alert()->success('Saved successfully');
+        return back();
+        
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
+    public function show()
+    {   
+        $form               = Form::where('user_id', auth()->user()->id)->first();
+        $data['fields']     = $form->fields()->orderBy('form_fields.id', 'asc')->get();
+        $data['students']   = Student::with('studentForm')->latest()->paginate(10);
+        return view('student.show', $data);
     }
 
     /**

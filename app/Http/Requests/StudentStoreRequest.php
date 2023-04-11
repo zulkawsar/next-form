@@ -3,16 +3,19 @@
 namespace App\Http\Requests;
 
 use App\Models\Student;
+use Illuminate\Validation\Rule;
+use App\Traits\CustomFieldValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StudentStoreRequest extends FormRequest
 {
+    use CustomFieldValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,12 +25,26 @@ class StudentStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $validate =  [
             'class' => ['required', 'string', 'max:255'],
             'name'  =>  ['required', 'max:255'],
             'phone' => ['required', 'regex:/^(\+?880|0)1[3456789][0-9]{8}$/'],
             'email' => ['email', 'max:255', Rule::unique(Student::class)],
-            'status'=> ['required', Rule::in([Student::STDUNCONFIRMED, Student::STDADMITTED, Student::STDTERMINATED])]
+            'status'=> ['required', Rule::in([Student::STDUNCONFIRMED, Student::STDADMITTED, Student::STDTERMINATED])],
+            
+        ];
+        return array_merge($validate, $this->generateValidateRules());
+    }
+
+    /**
+     * Custom message for validation
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'required' => "Field is required",
         ];
     }
 }

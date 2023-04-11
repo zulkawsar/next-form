@@ -13,20 +13,50 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-8 offset-md-2">
                                 @if($errors->any())
-                                    <div class="alert alert-danger" role="alert">
-                                        <strong>Error!</strong> validation error occurred
-                                    </div>
-                                @endif
-
-                                @if(session('mail_sent') == 1)
-                                    <div class="alert alert-success" role="alert">
-                                        <strong>Success!</strong> form data sent via email
-                                    </div>
+                                    @foreach ($errors->all() as $message) 
+                                        <div class="alert alert-danger" role="alert">
+                                            {{$message}}
+                                        </div>
+                                    @endforeach
                                 @endif
 
                                 <div class="card bg-light mb-3">
                                     <div class="card-body">
-                                        @if(count($fields) > 0)
+                                        <form id="studentForm" method="post" action="{{ route('student.save') }}" role="form" data-toggle="validator">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <label for="class">Class Name</label>
+                                                <input type="text" class="form-control" name="class" placeholder="Six" id="class" value="{{ old('class') }}"  required/>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="name">Name</label>
+                                                <input type="text" class="form-control" name="name" id="name" placeholder="Jon Doe" value="{{ old('name') }}"  required/>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="email">Email</label>
+                                                <input type="email" class="form-control" name="email" id="email" placeholder="example@mail.com" value="{{ old('email') }}"  required/>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="phone_number">Phone number:</label>
+                                                <input type="text" id="phone_number" name="phone" class="form-control" placeholder="+880XXXXXXXXXX" maxlength="13" required>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="phone_number">Status</label>
+                                                <select class="form-select" name="status" aria-label="Default select status" required>
+                                                  <option selected>Select one</option>
+                                                  <option value="unconfirmed">Unconfirmed</option>
+                                                  <option value="admitted">Admitted</option>
+                                                  <option value="admitted">Admitted</option>
+                                                </select>
+                                                <div class="help-block with-errors"></div>
+                                            </div>
+
+                                            @if(count($fields) > 0)
 
                                                 @foreach($fields as $field)
                                                     @php
@@ -39,21 +69,15 @@
                                                         @if($options->label)
                                                             <label for="{{ $id_for }}">{{ $options->label }}</label>
                                                         @endif
-                                                        <a href="javascript:void(0)" class="text-right text-info float-right" data-toggle="tooltip" data-placement="top" title="Delete"
-                                                            onclick="event.preventDefault();
-                                                            document.getElementById('Delete{{$field->pivot->id}}').submit();">
-                                                           Remove
-                                                        </a>
-                                                        
 
                                                         @switch($field->field_type)
                                                             @case("input")
                                                                 @if($options->type == 'boolean')
                                                                     <div class="form-check form-switch">
-                                                                      <input class="form-check-input" type="checkbox" name="{{ $field_name }}" role="switch" id="{{ $id_for }}">
+                                                                      <input class="form-check-input" type="checkbox" name="{{ $field_name }}" role="switch" id="{{ $id_for }}" {{$options->validation->required ? 'required' : ''}}>
                                                                     </div>
                                                                 @else 
-                                                                <input type="{{ $options->type == "date" ? "text" : $options->type }}" class="form-control {{ $options->type == "date"? "datepicker" : "" }} @error($field_name) is-invalid @enderror" name={{ $field_name }} id="{{ $id_for }}" value="{{ old($field_name) }}" />
+                                                                <input type="{{ $options->type == "date" ? "text" : $options->type }}" class="form-control {{ $options->type == "date"? "datepicker" : "" }} @error($field_name) is-invalid @enderror" name={{ $field_name }} id="{{ $id_for }}" value="{{ old($field_name) }}" {{$options->validation->required ? 'required' : ''}} />
                                                                 @endif
                                                             @default
                                                         @endswitch
@@ -63,15 +87,14 @@
                                                                 {{ $errors->first($field_name) }}
                                                             </div>
                                                         @enderror
-                                                        
-                                                        <form id="Delete{{$field->pivot->id}}" action="{{ route('field.destroy', [$field->pivot->id]) }}" method="POST" style="display: none;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
+                                                        <div class="help-block with-errors"></div>
                                                     </div>
 
                                                 @endforeach
-                                        @endif
+                                            @endif
+
+                                            <button type="submit" class="btn btn-info bg-info">Save</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -83,6 +106,7 @@
     </div>
     <script>
         (function(){
+            $('#studentForm').validate()
             $('.datepicker').datepicker({
                 format: 'yyyy/mm/dd'
             });

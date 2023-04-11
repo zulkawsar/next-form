@@ -32,64 +32,6 @@ class FormBuilder extends Controller
 
         return view('form.form', $data);
     }
-
-    /**
-     * handle form submit request
-     */
-    public function handleFormRequest(Request $request) {
-        // must have data
-        $validator = Validator::make($request->all(), [
-            'form_id' => 'required|integer|exists:forms,id',
-            'field_ids' => 'required|string',
-        ]);
-
-        abort_if($validator->fails(), 422, "Data error");
-
-        // generating validation rules based on dynamic field config data
-        $field_map_ids = explode(",", $request->input('field_ids'));
-
-        $field_required_rules = collect($field_map_ids)->mapWithKeys(function($id){
-            $field_options = FormField::findOrFail($id)->options;
-            if($field_options->validation->required == 1) {
-                $rules = ['required'];
-                if(isset($field_options->type) && $field_options->type == "email") $rules[] = 'email';
-
-                return [
-                    'field_'. $id => implode("|", $rules)
-                ];
-            }
-            else {
-                return ['field_'. $id => 'nullable'];
-            }
-        });
-
-        // validation based on dynamic data
-        $dynamic_validator = Validator::make($request->all(), $field_required_rules->toArray(), [
-            'required' => "field can't be left blank",
-            'email' => 'field must be a valid email address'
-        ]);
-
-        if ($dynamic_validator->fails()) {
-            return redirect()->back()
-                        ->withErrors($dynamic_validator)
-                        ->withInput();
-        }
-
-        // gather the form data as field_name => [ label, data ]
-        $form_data = collect($field_map_ids)->mapWithKeys(function($id) use ($request){
-            $field_options = FormField::findOrFail($id)->options;
-            $field_name = 'field_'. $id;
-            return [
-                $field_name => [
-                    $field_options->label, $request->input($field_name)
-                ]
-            ];
-        });
-        // return new FormSubmitted($form_data);
-
-        return redirect()->back();
-    }
-
     /**
      * handle form data request save
      */
@@ -115,7 +57,7 @@ class FormBuilder extends Controller
         $common_data = [
             'label' => $request->field_lable,
             'validation' => [
-                'required' => $request->isRequired ? 1 : 0
+                'required' => $request->is_required ? 1 : 0
             ]
         ];
 
