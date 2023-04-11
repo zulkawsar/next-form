@@ -47,7 +47,7 @@ class FormSeeder extends Seeder
                 case 'select':
                     $config = [
                         'label' => 'Drop-Down',
-                        'values' => "The Division 2, Modern Warfare, BattleField V, Apex Legends",
+                        'values' => "option 1, option 2",
                         'validation' => [
                             'required' => Arr::random([0, 1])
                         ]
@@ -55,9 +55,10 @@ class FormSeeder extends Seeder
                     break;
 
                 default:
+                    $type = Arr::random(["text", "email", "date"]);
                     $config = [
-                        'label' => 'Input Field',
-                        'type' => Arr::random(["text", "email", "phone", "date"]),
+                        'label' => 'Input Field '. $type,
+                        'type' => $type,
                         'validation' => [
                             'required' => Arr::random([0, 1])
                         ]

@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fields', function (Blueprint $table) {
+        Schema::create('student_forms', function (Blueprint $table) {
             $table->id();
-            $table->enum('field_type', ['input', 'textarea', 'select']);
+            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('form_field_id')->constrained()->cascadeOnDelete();
+            $table->string('value')->nullable();
         });
     }
 
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fields');
+        Schema::dropIfExists('student_forms');
     }
 };

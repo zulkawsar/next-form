@@ -21,11 +21,6 @@ Route::get('/', function () {
 
 Route::get('/form-create', [FormBuilder::class,'showBuilder'])->name('app.home');
 
-Route::get('/show-form', [FormBuilder::class,'showForm'])->name('show.form');
-Route::post('/save-form', [FormBuilder::class,'saveForm'])->name('save.form');
-Route::post('/submit-form', [FormBuilder::class,'handleFormRequest'])->name('submit.form');
-Route::delete('/field/{id}', [FormBuilder::class,'delete'])->name('field.destroy');
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -36,7 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    
+    // form builder
+    Route::get('/generate-form', [FormBuilder::class,'showForm'])->name('show.form');
+    Route::post('/save-form', [FormBuilder::class,'saveForm'])->name('save.form');
+    Route::post('/submit-form', [FormBuilder::class,'handleFormRequest'])->name('submit.form');
+    Route::delete('/field/{id}', [FormBuilder::class,'delete'])->name('field.destroy');
 });
 
 require __DIR__.'/auth.php';

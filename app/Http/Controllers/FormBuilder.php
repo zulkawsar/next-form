@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Validator, DB};
 use App\Models\{Form, FormField, Field};
+use App\Http\Requests\FormBuilderRequest;
+use Illuminate\Support\Facades\{Validator, DB};
 
 class FormBuilder extends Controller
 {
@@ -13,18 +14,23 @@ class FormBuilder extends Controller
      * show the form
      */
     public function showForm() {
-        $form_id_toshow = 1;
-        $the_form = Form::findOrFail($form_id_toshow);
-        $field_map_ids = FormField::where('form_id', $form_id_toshow)->select('id')->pluck('id')->toArray();
+        $form = Form::where('user_id', auth()->user()->id)->first();
+        if (!$form) {
+            $form = Form::create([
+                'form_name' => auth()->user()->name .' Form',
+                'user_id' => auth()->user()->id
+            ]);
+        }
+        $field_map_ids = FormField::where('form_id', $form->id)->select('id')->pluck('id')->toArray();
 
         $data = [
             'title' => 'the form',
-            'all_fields' => Field::oldest()->get(),
-            'fields' => $the_form->fields()->orderBy('form_fields.id', 'asc')->get(),
-            'form_id' => $form_id_toshow,
+            'all_fields' => Field::get(),
+            'fields' => $form->fields()->orderBy('form_fields.id', 'asc')->get(),
+            'form_id' => $form->id,
             'field_ids' => implode(",", $field_map_ids)
         ];
-        // dd($data);
+
         return view('form.form', $data);
     }
 
@@ -82,56 +88,23 @@ class FormBuilder extends Controller
         });
         // return new FormSubmitted($form_data);
 
-        return redirect()->back()->with('mail_sent', 1);
+        return redirect()->back();
     }
 
     /**
      * handle form data ajax request save
      */
-    public function saveForm(Request $request) {
-        $request->validate([
-            'field_type'    => 'required|exists:fields,field_type',
-            'field_lable'   => 'required',
-        ]);
-
-
+    public function saveForm(FormBuilderRequest $request) {
+        
         $fields = Field::all()->mapWithKeys(function ($field) {
             return [$field->id => $field->field_type];
         });
-
-        // data from ajax request
-        // $field_data = collect([
-        //    ['field_type' => $request->field_type],
-        //    ['label' => $request->field_lable],
-        //    ['isRequired' => $request->is_required]
-        // ]);
 
         switch ($request->field_type) {
             case 'input':
                 $field_id = $fields->search('input');
 
-                $additional_config = ['type' => 'text'];
-                break;
-
-            case 'select':
-                $field_id = $fields->search('select');
-
-                $values = collect($request->additionalConfig->listOptions)->map(function($opt){
-                    return trim($opt);
-                })->implode(',');
-
-                $additional_config = ['values' => $values];
-                break;
-
-            case 'textarea':
-                $field_id = $fields->search('textarea');
-
-                $additional_config = ['rows' => '4'];
-                break;
-
-            case 'date':
-                $field_id = $fields->search('input');
-                $additional_config = ['type' => 'date'];
+                $additional_config = ['type' => $request->type_option];
                 break;
 
             default:
@@ -150,13 +123,9 @@ class FormBuilder extends Controller
         $config = ['field' => $field_id, 'options' => array_merge($common_data, $additional_config)];
 
         // attempt data save
-        $save_success = 1;
-
         DB::transaction(function () use ($config) {
             try {
-                Form::findOrFail(1)->fields()->detach();
-
-                Form::findOrFail(1)->fields()->attach($config['field'],
+                Form::whereUserId(auth()->user()->id)->firstOrFail()->fields()->attach($config['field'],
                 [
                     'options' => json_encode($config['options'])
                 ]);
@@ -165,9 +134,7 @@ class FormBuilder extends Controller
             }
         });
 
-        return response()->json([
-            'success' => $save_success
-        ]);
+        return back();
     }
 
     // Delete form

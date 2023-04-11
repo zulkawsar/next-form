@@ -18,9 +18,7 @@ class FieldsSeeder extends Seeder
         \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         Field::insert([
-            ['field_type' => "input"],
-            ['field_type' => "textarea"],
-            ['field_type' => "select"],
+            ['field_type' => "input"]
         ]);
     }
 }

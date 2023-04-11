@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('form_id')->constrained()->cascadeOnDelete();
             $table->foreignId('field_id')->constrained()->cascadeOnDelete();
             $table->json('options')->nullable();
-            $table->timestamps();
         });
     }
 

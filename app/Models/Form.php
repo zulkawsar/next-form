@@ -9,6 +9,11 @@ class Form extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'form_name'
+    ];
+
     /**
      * The fields that belong to the form.
      */

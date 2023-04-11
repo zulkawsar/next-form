@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fields', function (Blueprint $table) {
+        Schema::create('students', function (Blueprint $table) {
             $table->id();
-            $table->enum('field_type', ['input', 'textarea', 'select']);
+            $table->string('name');
+            $table->string('email');
+            $table->string('phone', 15);
+            $table->string('class',10);
+            $table->enum('status', ['unconfirmed', 'admitted', 'terminated']);
+            $table->timestamps();
         });
     }
 
@@ -22,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fields');
+        Schema::dropIfExists('students');
     }
 };
